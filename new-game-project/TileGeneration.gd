@@ -80,6 +80,7 @@ const SCREEN_HEIGHT = 600
 
 func _input(event):
 	if event is InputEventMouseButton and event.pressed:
+		#place a block at the mouse pos
 		var clicked_cell = ground.local_to_map(ground.get_local_mouse_position())
 		print(clicked_cell)
 		set_cell(clicked_cell,main_source,GrabRandomBlock())
