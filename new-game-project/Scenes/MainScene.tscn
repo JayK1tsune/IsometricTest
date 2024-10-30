@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://bq0nscf3ori1p"]
+
+[ext_resource type="PackedScene" uid="uid://b6487e3dt2ugf" path="res://Scenes/Tilemap.tscn" id="1_xg7u5"]
+
+[node name="MainScene" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(1.52, 1.52)
+
+[node name="Sprites" parent="." instance=ExtResource("1_xg7u5")]
+gridSize_x_ground = 10
+gridSize_y_ground = 10
+gridSize_x_level_1 = 0
+gridSize_y_level_1 = 0
+gridSize_x_level_2 = 0
+gridSize_y_level_2 = 0

@@ -1,0 +1,53 @@
+[gd_scene load_steps=5 format=3 uid="uid://b6487e3dt2ugf"]
+
+[ext_resource type="Script" path="res://TileGeneration.gd" id="1_q60gg"]
+[ext_resource type="Texture2D" uid="uid://daixp0rg1o252" path="res://Assets/Blocks/cube2.png" id="2_57con"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_o4sm1"]
+texture = ExtResource("2_57con")
+margins = Vector2i(1, 1)
+texture_region_size = Vector2i(34, 33)
+0:0/0 = 0
+0:0/0/texture_origin = Vector2i(0, -8)
+1:0/0 = 0
+1:0/0/texture_origin = Vector2i(0, -8)
+2:0/0 = 0
+2:0/0/texture_origin = Vector2i(0, -8)
+3:0/0 = 0
+3:0/0/texture_origin = Vector2i(0, -8)
+4:0/0 = 0
+4:0/0/texture_origin = Vector2i(0, -8)
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_rctcv"]
+tile_shape = 1
+tile_layout = 5
+tile_offset_axis = 1
+tile_size = Vector2i(32, 16)
+physics_layer_0/collision_layer = 1
+sources/0 = SubResource("TileSetAtlasSource_o4sm1")
+
+[node name="Ground" type="TileMapLayer"]
+tile_set = SubResource("TileSet_rctcv")
+script = ExtResource("1_q60gg")
+gridSize_x_ground = 3
+gridSize_y_ground = 3
+gridSize_x_level_1 = 5
+gridSize_y_level_1 = 3
+gridSize_x_level_2 = 2
+gridSize_y_level_2 = 2
+
+[node name="Level1" type="TileMapLayer" parent="."]
+z_as_relative = false
+y_sort_enabled = true
+tile_set = SubResource("TileSet_rctcv")
+y_sort_origin = 1
+
+[node name="Level2" type="TileMapLayer" parent="."]
+y_sort_enabled = true
+tile_set = SubResource("TileSet_rctcv")
+y_sort_origin = 2
