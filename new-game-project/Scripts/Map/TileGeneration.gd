@@ -1,5 +1,6 @@
 extends TileMapLayer
 
+
 @export var gridSize_x_ground = 10  # Ground layer width
 @export var gridSize_y_ground = 10  # Ground layer height
 @export var gridSize_x_level_1 = 10  # Level 1 width
@@ -7,21 +8,42 @@ extends TileMapLayer
 @export var gridSize_x_level_2 = 10  # Level 2 width
 @export var gridSize_y_level_2 = 10  # Level 2 height
 
-@onready var ground = $"."  # Ground layer reference
-@onready var level_1 = $Level1  # Level 1 reference
-@onready var level_2 = $Level2  # Level 2 reference
+@onready var ground = $"."
+@onready var level_1 = $Level1
+@onready var level_2 = $Level2
 
+enum Layer {
+	GROUND,
+	LEVEL_1,
+	LEVEL_2
+}
+
+var current_layer = Layer.GROUND
 const TILE_WIDTH = 32  # Width of the tile (horizontal dimension)
 const TILE_HEIGHT = 16  # Height of the tile (vertical dimension)
 const main_source = 0
-const pink_block_atlas_pos = Vector2i(0, 0)
-const orange_block_atlas_pos = Vector2i(1, 0)
-const purple_block_atlas_pos = Vector2i(2, 0)
-const green_block_atlas_pos = Vector2i(3, 0)
-const red_block_atlas_pos = Vector2i(4, 0)
+
+var block_dic = {
+	0:Vector2i(0, 0),
+	1:Vector2i(1, 0),
+	2:Vector2i(2, 0),
+	3:Vector2i(3, 0),
+	4:Vector2i(4, 0)
+}
+var layer_map = {}
+var  blockId = 0
+
+func _get_block_id() -> Vector2i:
+	return block_dic.get(blockId,Vector2i(0,0))
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	layer_map ={
+		Layer.GROUND: ground,
+		Layer.LEVEL_1: level_1,
+		Layer.LEVEL_2: level_2
+	}
+
 	# Generate the ground layer
 	await GenerateLevel(ground, 0, gridSize_x_ground, gridSize_y_ground)
 	print_debug("Ground complete")
@@ -39,9 +61,9 @@ func GenerateLevel(level: TileMapLayer, layer_offset: int, gridSize_x: int, grid
 	var placed_blocks = {}
 	var first_block_placed = false
 
-	for y in range(gridSize_y):  # Loop through the grid height for this layer
-		for x in range(gridSize_x):  # Loop through the grid width for this layer
-			var coords = Vector2i(x, y + layer_offset)  # Offset y by layer_offset
+	for y in range(gridSize_y):
+		for x in range(gridSize_x): 
+			var coords = Vector2i(x, y + layer_offset) 
 
 			# Ensure the new coordinates are within grid boundaries
 			if not placed_blocks.has(coords) and (first_block_placed == false or HasAdjacentBlock(coords, placed_blocks)):
@@ -58,8 +80,8 @@ func GenerateLevel(level: TileMapLayer, layer_offset: int, gridSize_x: int, grid
 
 # Get a random block from the available options
 func GrabRandomBlock() -> Vector2i:
-	var cubes = [pink_block_atlas_pos, orange_block_atlas_pos, purple_block_atlas_pos, green_block_atlas_pos, red_block_atlas_pos]
-	return cubes.pick_random()
+	var cubes = block_dic.values().pick_random()
+	return cubes
 
 # Check if there is an adjacent block to a given coordinate
 func HasAdjacentBlock(coords: Vector2i, placed_blocks: Dictionary) -> bool:
@@ -74,18 +96,15 @@ func HasAdjacentBlock(coords: Vector2i, placed_blocks: Dictionary) -> bool:
 			return true
 	return false
 
-# Handle input events for block placement
-const SCREEN_WIDTH = 800
-const SCREEN_HEIGHT = 600
-
 func _unhandled_input(event):
+	var current_tilemap = layer_map[current_layer]
 	if event is InputEventMouseButton and event.is_action_pressed("left_click"):
-		#place a block at the mouse pos
-		var clicked_cell = ground.local_to_map(ground.get_local_mouse_position())
-		print(clicked_cell)
-		set_cell(clicked_cell,main_source,GrabRandomBlock())
+		var clicked_cell = current_tilemap.local_to_map(get_local_mouse_position())
+		current_tilemap.set_cell(clicked_cell, main_source, _get_block_id())  
+
 	if event is InputEventMouseButton and event.is_action_pressed("right_click"):
-		var clicked_cell = ground.local_to_map(ground.get_local_mouse_position())
-		print("Block removed...")
-		set_cell(clicked_cell,main_source,Vector2i(-1,-1),-1)
+		var clicked_cell = current_tilemap.local_to_map(get_local_mouse_position())
+		print("Block removed at:", clicked_cell)
+		current_tilemap.set_cell(clicked_cell, main_source, Vector2i(-1, -1), -1)
+
 		

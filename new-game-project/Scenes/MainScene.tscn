@@ -5,16 +5,17 @@
 
 [node name="MainScene" type="Node2D"]
 
-[node name="Control" parent="." instance=ExtResource("1_bly2w")]
+[node name="Control" parent="." node_paths=PackedStringArray("map_node") instance=ExtResource("1_bly2w")]
 z_index = 1
 texture_filter = 1
+map_node = NodePath("../Sprites")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(1.52, 1.52)
 
 [node name="Sprites" parent="." instance=ExtResource("1_xg7u5")]
-gridSize_x_ground = 10
-gridSize_y_ground = 10
+gridSize_x_ground = 5
+gridSize_y_ground = 5
 gridSize_x_level_1 = 0
 gridSize_y_level_1 = 0
 gridSize_x_level_2 = 0
