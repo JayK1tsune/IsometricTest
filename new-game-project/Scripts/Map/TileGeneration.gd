@@ -78,9 +78,14 @@ func HasAdjacentBlock(coords: Vector2i, placed_blocks: Dictionary) -> bool:
 const SCREEN_WIDTH = 800
 const SCREEN_HEIGHT = 600
 
-func _input(event):
-	if event is InputEventMouseButton and event.pressed:
+func _unhandled_input(event):
+	if event is InputEventMouseButton and event.is_action_pressed("left_click"):
 		#place a block at the mouse pos
 		var clicked_cell = ground.local_to_map(ground.get_local_mouse_position())
 		print(clicked_cell)
 		set_cell(clicked_cell,main_source,GrabRandomBlock())
+	if event is InputEventMouseButton and event.is_action_pressed("right_click"):
+		var clicked_cell = ground.local_to_map(ground.get_local_mouse_position())
+		print("Block removed...")
+		set_cell(clicked_cell,main_source,Vector2i(-1,-1),-1)
+		
