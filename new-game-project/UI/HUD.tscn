@@ -1,0 +1,107 @@
+[gd_scene load_steps=10 format=3 uid="uid://2r42qelcbx3p"]
+
+[ext_resource type="FontFile" path="res://Assets/Fonts/poco/Poco.tres" id="2_07h7a"]
+[ext_resource type="Texture2D" uid="uid://cqu4j8xygw85n" path="res://UI/UIAtlas.png" id="3_5d6in"]
+[ext_resource type="Texture2D" uid="uid://7nb43myal0ue" path="res://Assets/Blocks/CubeAtlas2.png" id="3_8dw51"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l5184"]
+atlas = ExtResource("3_5d6in")
+region = Rect2(4, 4, 109, 203)
+margin = Rect2(1, 1, 2, 2)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ocgfu"]
+atlas = ExtResource("3_5d6in")
+region = Rect2(129, 163, 19, 14)
+margin = Rect2(1, 1, 2, 2)
+
+[sub_resource type="Theme" id="Theme_i4qvo"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_62gjg"]
+atlas = ExtResource("3_5d6in")
+region = Rect2(124, 180, 49, 19)
+margin = Rect2(1, 1, 2, 2)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x16wb"]
+atlas = ExtResource("3_5d6in")
+region = Rect2(151, 163, 19, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fl45u"]
+atlas = ExtResource("3_8dw51")
+region = Rect2(4, 4, 34, 32)
+margin = Rect2(1, 1, 2, 2)
+
+[node name="CanvasGroup" type="CanvasGroup"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Menu" type="NinePatchRect" parent="CanvasLayer"]
+texture_filter = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = -148.0
+offset_right = 151.0
+offset_bottom = -10.0
+grow_vertical = 0
+texture = SubResource("AtlasTexture_l5184")
+region_rect = Rect2(-1.85649, -6.13245, 118.817, 211.69)
+patch_margin_left = 29
+patch_margin_top = 16
+patch_margin_right = 13
+patch_margin_bottom = 27
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+
+[node name="BoxContainer" type="BoxContainer" parent="CanvasLayer/Menu"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.163121
+anchor_top = 0.724638
+anchor_right = 0.180512
+anchor_bottom = 0.724638
+offset_right = 99.0
+offset_bottom = 21.0
+metadata/_edit_use_anchors_ = true
+
+[node name="Back" type="TextureButton" parent="CanvasLayer/Menu/BoxContainer"]
+texture_filter = 1
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_ocgfu")
+stretch_mode = 3
+
+[node name="Select" type="TextureButton" parent="CanvasLayer/Menu/BoxContainer"]
+texture_filter = 1
+layout_mode = 2
+theme = SubResource("Theme_i4qvo")
+texture_normal = SubResource("AtlasTexture_62gjg")
+
+[node name="Label" type="Label" parent="CanvasLayer/Menu/BoxContainer/Select"]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -23.5
+offset_top = -11.5
+offset_right = 23.5
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("2_07h7a")
+text = "GO
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Next" type="TextureButton" parent="CanvasLayer/Menu/BoxContainer"]
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_x16wb")
+stretch_mode = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="CanvasLayer/Menu/BoxContainer"]
+position = Vector2(50.9999, -40.0001)
+scale = Vector2(1.48772, 1.5)
+texture = SubResource("AtlasTexture_fl45u")

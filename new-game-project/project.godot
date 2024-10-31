@@ -24,6 +24,10 @@ window/size/viewport_height=600
 
 project/assembly_name="New Game Project"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/codeandweb.texturepacker/plugin.cfg", "res://addons/copilot/plugin.cfg")
+
 [input]
 
 left_click={

@@ -1,8 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://bq0nscf3ori1p"]
+[gd_scene load_steps=3 format=3 uid="uid://bq0nscf3ori1p"]
 
+[ext_resource type="PackedScene" uid="uid://2r42qelcbx3p" path="res://UI/HUD.tscn" id="1_bly2w"]
 [ext_resource type="PackedScene" uid="uid://b6487e3dt2ugf" path="res://Scenes/Tilemap.tscn" id="1_xg7u5"]
 
 [node name="MainScene" type="Node2D"]
+
+[node name="Control" parent="." instance=ExtResource("1_bly2w")]
+z_index = 1
+texture_filter = 1
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(1.52, 1.52)
