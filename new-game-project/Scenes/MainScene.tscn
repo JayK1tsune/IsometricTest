@@ -13,7 +13,7 @@ map_node = NodePath("../Sprites")
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(1.52, 1.52)
 
-[node name="Sprites" parent="." instance=ExtResource("1_xg7u5")]
+[node name="Sprites" parent="." groups=["ui"] instance=ExtResource("1_xg7u5")]
 gridSize_x_ground = 5
 gridSize_y_ground = 5
 gridSize_x_level_1 = 0

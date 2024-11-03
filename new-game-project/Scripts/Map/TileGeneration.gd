@@ -1,6 +1,6 @@
 extends TileMapLayer
 
-
+@export var hold_threshold := 0.2  # Time in seconds to switch from single-click to hold
 @export var gridSize_x_ground = 10  # Ground layer width
 @export var gridSize_y_ground = 10  # Ground layer height
 @export var gridSize_x_level_1 = 10  # Level 1 width
@@ -11,6 +11,19 @@ extends TileMapLayer
 @onready var ground = $"."
 @onready var level_1 = $Level1
 @onready var level_2 = $Level2
+
+
+var is_holding:= false
+var left_click_timer:= 0.0
+var is_mouse_in_UI: bool:
+	get = get_mouse_ui, set = set_mouse_ui
+
+func get_mouse_ui():
+	return is_mouse_in_UI
+	
+func set_mouse_ui(value: bool):
+	is_mouse_in_UI = value
+	
 
 enum Layer {
 	GROUND,
@@ -56,6 +69,7 @@ func _ready() -> void:
 	await GenerateLevel(level_2, 2, gridSize_x_level_2, gridSize_y_level_2)
 	print_debug("Level 2 complete")
 
+
 # Generate blocks for the specified level
 func GenerateLevel(level: TileMapLayer, layer_offset: int, gridSize_x: int, gridSize_y: int):
 	var placed_blocks = {}
@@ -96,15 +110,50 @@ func HasAdjacentBlock(coords: Vector2i, placed_blocks: Dictionary) -> bool:
 			return true
 	return false
 
+
+
 func _unhandled_input(event):
 	var current_tilemap = layer_map[current_layer]
-	if event is InputEventMouseButton and event.is_action_pressed("left_click"):
-		var clicked_cell = current_tilemap.local_to_map(get_local_mouse_position())
-		current_tilemap.set_cell(clicked_cell, main_source, _get_block_id())  
+	var clicked_cell = current_tilemap.local_to_map(get_local_mouse_position())
 
-	if event is InputEventMouseButton and event.is_action_pressed("right_click"):
-		var clicked_cell = current_tilemap.local_to_map(get_local_mouse_position())
-		print("Block removed at:", clicked_cell)
-		current_tilemap.set_cell(clicked_cell, main_source, Vector2i(-1, -1), -1)
+	if event is InputEventMouseButton:
+		if get_mouse_ui()== true:
+			return
+		if event.is_action_pressed("left_click"):
+			# Start the timer for detecting hold
+			left_click_timer = 0.0
+			is_holding = false
+			set_process(true)  # Ensure process is enabled for continuous checking
+			# Place or replace a block immediately on single-click
+			if current_tilemap.get_cell_tile_data(clicked_cell): 
+				current_tilemap.set_cell(clicked_cell, main_source, _get_block_id())
+			else:
+				current_tilemap.set_cell(clicked_cell, main_source, _get_block_id())
+		elif event.is_action_released("left_click"):
+			if not is_holding:
+				# If it was a single click and not a hold, set process to false
+				set_process(false)
+		if event.is_action_pressed("right_click"):
+			set_process(true)
+		elif event.is_action_released("right_click"):
+			set_process(false)
 
-		
+func _process(delta):
+	var current_tilemap = layer_map[current_layer]
+	var clicked_cell = current_tilemap.local_to_map(get_local_mouse_position())
+
+	# Check if left-click hold threshold has been reached
+	if Input.is_action_pressed("left_click"):
+		left_click_timer += delta
+		if left_click_timer >= hold_threshold and not is_holding:
+			is_holding = true  # Now we’re in "hold mode" for continuous placement
+		if is_holding:
+			# Only place continuously if the cell is empty
+			if not current_tilemap.get_cell_tile_data(clicked_cell):
+				current_tilemap.set_cell(clicked_cell, main_source, _get_block_id())
+	# Handle continuous removal with right-click
+	# Might make a "eraser" for this but this works for now
+	if Input.is_action_pressed("right_click"):
+		if current_tilemap.get_cell_tile_data(clicked_cell):
+			current_tilemap.set_cell(clicked_cell, main_source, Vector2i(-1, -1), -1)
+			
