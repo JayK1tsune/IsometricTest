@@ -1,9 +1,11 @@
-[gd_scene load_steps=12 format=3 uid="uid://2r42qelcbx3p"]
+[gd_scene load_steps=16 format=3 uid="uid://2r42qelcbx3p"]
 
-[ext_resource type="Script" path="res://UI/hud.gd" id="1_jsge3"]
+[ext_resource type="Script" uid="uid://h0pcai2ro2a" path="res://Scripts/UI/hud.gd" id="1_jsge3"]
 [ext_resource type="Texture2D" uid="uid://cqu4j8xygw85n" path="res://UI/UIAtlas.png" id="3_5d6in"]
 [ext_resource type="Texture2D" uid="uid://7nb43myal0ue" path="res://Assets/Blocks/CubeAtlas2.png" id="3_8dw51"]
+[ext_resource type="FontFile" uid="uid://dpsgie3ku7frj" path="res://Assets/Fonts/droid-sans/DroidSans-Bold.ttf" id="4_f2wx0"]
 [ext_resource type="ButtonGroup" uid="uid://cuotw8q2r5cov" path="res://UI/new_button_group.tres" id="5_tdmi1"]
+[ext_resource type="Texture2D" uid="uid://bx5fri4fv1jqp" path="res://Scripts/Map/UIAtlas.png" id="6_gppie"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8dx12"]
 atlas = ExtResource("3_8dw51")
@@ -36,48 +38,34 @@ atlas = ExtResource("3_8dw51")
 region = Rect2(140, 4, 34, 32)
 margin = Rect2(1, 1, 2, 2)
 
-[node name="CanvasGroup" type="CanvasGroup" node_paths=PackedStringArray("map_node") groups=["ui"]]
-script = ExtResource("1_jsge3")
-textureAtlas = SubResource("AtlasTexture_8dx12")
-map_node = NodePath("Control/CanvasLayer/Menu/BoxContainer/Sprite2D")
+[sub_resource type="AtlasTexture" id="AtlasTexture_2ptjp"]
+atlas = ExtResource("6_gppie")
+region = Rect2(126, 160, 20, 14)
 
-[node name="Control" type="Control" parent="." groups=["ui"]]
-z_index = 3
-layout_mode = 3
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = 19.0
-offset_top = 450.0
-offset_right = 149.0
-offset_bottom = 591.0
-grow_horizontal = 2
-grow_vertical = 2
+[sub_resource type="AtlasTexture" id="AtlasTexture_gppie"]
+atlas = ExtResource("6_gppie")
+region = Rect2(148, 160, 20, 14)
 
-[node name="CanvasLayer" type="CanvasLayer" parent="Control" groups=["ui"]]
-
-[node name="Control" type="Control" parent="Control/CanvasLayer" groups=["ui"]]
+[node name="CanvasGroup" type="CanvasGroup" node_paths=PackedStringArray("current_cube", "button_text") groups=["ui"]]
 z_index = 1
-layout_mode = 3
-anchors_preset = 0
-offset_left = 10.0
-offset_top = 425.0
-offset_right = 157.0
-offset_bottom = 597.0
-mouse_filter = 1
+script = ExtResource("1_jsge3")
+current_cube = NodePath("CanvasLayer/Menu/Buttons/Sprite2D")
+button_text = NodePath("CanvasLayer/Menu/Buttons/Select/Label")
+textureAtlas = SubResource("AtlasTexture_8dx12")
 
-[node name="Menu" type="NinePatchRect" parent="Control/CanvasLayer" groups=["ui"]]
+[node name="CanvasLayer" type="CanvasLayer" parent="." groups=["ui"]]
+
+[node name="Menu" type="NinePatchRect" parent="CanvasLayer" groups=["ui"]]
 z_index = 1
 texture_filter = 1
-anchors_preset = 2
-anchor_top = 1.0
+anchors_preset = -1
+anchor_top = 0.677
+anchor_right = 0.164
 anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = -148.0
-offset_right = 151.0
-offset_bottom = -10.0
+offset_left = -10.0
+offset_top = -1.20001
+offset_right = 6.8
+offset_bottom = 3.0
 grow_vertical = 0
 texture = SubResource("AtlasTexture_l5184")
 region_rect = Rect2(-1.85649, -6.13245, 118.817, 211.69)
@@ -88,30 +76,30 @@ patch_margin_bottom = 27
 axis_stretch_horizontal = 2
 axis_stretch_vertical = 2
 
-[node name="BoxContainer" type="BoxContainer" parent="Control/CanvasLayer/Menu" groups=["ui"]]
+[node name="Buttons" type="BoxContainer" parent="CanvasLayer/Menu" groups=["ui"]]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.163121
-anchor_top = 0.724638
-anchor_right = 0.180512
-anchor_bottom = 0.724638
+anchor_left = 0.195946
+anchor_top = 0.808081
+anchor_right = 0.213337
+anchor_bottom = 0.808081
 offset_right = 99.0
 offset_bottom = 21.0
 metadata/_edit_use_anchors_ = true
 
-[node name="Back" type="TextureButton" parent="Control/CanvasLayer/Menu/BoxContainer"]
+[node name="Back" type="TextureButton" parent="CanvasLayer/Menu/Buttons"]
 texture_filter = 1
 layout_mode = 2
 texture_normal = SubResource("AtlasTexture_ocgfu")
 stretch_mode = 3
 
-[node name="Select" type="TextureButton" parent="Control/CanvasLayer/Menu/BoxContainer"]
+[node name="Select" type="TextureButton" parent="CanvasLayer/Menu/Buttons"]
 texture_filter = 1
 layout_mode = 2
 theme = SubResource("Theme_i4qvo")
 texture_normal = SubResource("AtlasTexture_62gjg")
 
-[node name="Label" type="Label" parent="Control/CanvasLayer/Menu/BoxContainer/Select"]
+[node name="Label" type="Label" parent="CanvasLayer/Menu/Buttons/Select"]
 texture_filter = 1
 layout_mode = 1
 anchors_preset = 8
@@ -119,31 +107,32 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -23.5
-offset_top = -11.5
-offset_right = 23.5
-offset_bottom = 11.5
+offset_left = -24.5001
+offset_top = -24.5001
+offset_right = 24.4999
+offset_bottom = 24.4999
 grow_horizontal = 2
 grow_vertical = 2
 tooltip_text = "Show / Hide
  Block Placement"
 mouse_filter = 1
-text = "SHOW
-"
+theme_override_fonts/font = ExtResource("4_f2wx0")
+theme_override_font_sizes/font_size = 0
+text = "Show"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Next" type="TextureButton" parent="Control/CanvasLayer/Menu/BoxContainer"]
+[node name="Next" type="TextureButton" parent="CanvasLayer/Menu/Buttons"]
 layout_mode = 2
 texture_normal = SubResource("AtlasTexture_x16wb")
 stretch_mode = 3
 
-[node name="Sprite2D" type="Sprite2D" parent="Control/CanvasLayer/Menu/BoxContainer"]
-position = Vector2(49.9999, -33.0001)
+[node name="Sprite2D" type="Sprite2D" parent="CanvasLayer/Menu/Buttons"]
+position = Vector2(49, -46)
 scale = Vector2(1.48772, 1.5)
 texture = SubResource("AtlasTexture_fl45u")
 
-[node name="BoxContainer2" type="BoxContainer" parent="Control/CanvasLayer/Menu" groups=["ui"]]
+[node name="Layers Selection" type="BoxContainer" parent="CanvasLayer/Menu" groups=["ui"]]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -159,7 +148,7 @@ grow_vertical = 2
 theme_override_constants/separation = 3
 alignment = 1
 
-[node name="B" type="Button" parent="Control/CanvasLayer/Menu/BoxContainer2"]
+[node name="B" type="Button" parent="CanvasLayer/Menu/Layers Selection"]
 layout_mode = 2
 toggle_mode = true
 action_mode = 0
@@ -167,29 +156,61 @@ keep_pressed_outside = true
 button_group = ExtResource("5_tdmi1")
 text = "B"
 
-[node name="Layer1" type="Button" parent="Control/CanvasLayer/Menu/BoxContainer2"]
+[node name="Layer 1" type="Button" parent="CanvasLayer/Menu/Layers Selection"]
 layout_mode = 2
 toggle_mode = true
 keep_pressed_outside = true
 button_group = ExtResource("5_tdmi1")
 text = "1"
 
-[node name="Layer2" type="Button" parent="Control/CanvasLayer/Menu/BoxContainer2"]
+[node name="Layer 2" type="Button" parent="CanvasLayer/Menu/Layers Selection"]
 layout_mode = 2
 toggle_mode = true
 keep_pressed_outside = true
 button_group = ExtResource("5_tdmi1")
 text = "2"
 
-[connection signal="mouse_entered" from="Control/CanvasLayer/Control" to="." method="_on_control_mouse_entered"]
-[connection signal="mouse_exited" from="Control/CanvasLayer/Control" to="." method="_on_control_mouse_exited"]
-[connection signal="mouse_entered" from="Control/CanvasLayer/Menu" to="." method="_on_menu_mouse_entered"]
-[connection signal="mouse_exited" from="Control/CanvasLayer/Menu" to="." method="_on_menu_mouse_exited"]
-[connection signal="pressed" from="Control/CanvasLayer/Menu/BoxContainer/Back" to="." method="_on_back_pressed"]
-[connection signal="pressed" from="Control/CanvasLayer/Menu/BoxContainer/Select" to="." method="_on_select_pressed"]
-[connection signal="pressed" from="Control/CanvasLayer/Menu/BoxContainer/Next" to="." method="_on_next_pressed"]
-[connection signal="pressed" from="Control/CanvasLayer/Menu/BoxContainer2/B" to="." method="_on_b_pressed"]
-[connection signal="pressed" from="Control/CanvasLayer/Menu/BoxContainer2/Layer1" to="." method="_on_layer_1_pressed"]
-[connection signal="pressed" from="Control/CanvasLayer/Menu/BoxContainer2/Layer1" to="." method="_on__pressed"]
-[connection signal="pressed" from="Control/CanvasLayer/Menu/BoxContainer2/Layer2" to="." method="_on_layer_2_pressed"]
-[connection signal="pressed" from="Control/CanvasLayer/Menu/BoxContainer2/Layer2" to="." method="_on__pressed"]
+[node name="Rotate Canvas" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+grow_horizontal = 0
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/Rotate Canvas"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -48.0
+offset_top = 6.0
+offset_right = -7.0
+offset_bottom = 21.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Rotate Canvas/PanelContainer"]
+layout_mode = 2
+
+[node name="Left" type="TextureButton" parent="CanvasLayer/Rotate Canvas/PanelContainer/HBoxContainer"]
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_2ptjp")
+
+[node name="Right" type="TextureButton" parent="CanvasLayer/Rotate Canvas/PanelContainer/HBoxContainer"]
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_gppie")
+
+[connection signal="mouse_entered" from="CanvasLayer/Menu" to="." method="_on_menu_mouse_entered"]
+[connection signal="mouse_exited" from="CanvasLayer/Menu" to="." method="_on_menu_mouse_exited"]
+[connection signal="pressed" from="CanvasLayer/Menu/Buttons/Back" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="CanvasLayer/Menu/Buttons/Select" to="." method="_on_select_pressed"]
+[connection signal="pressed" from="CanvasLayer/Menu/Buttons/Next" to="." method="_on_next_pressed"]
+[connection signal="pressed" from="CanvasLayer/Menu/Layers Selection/B" to="." method="_on_b_pressed"]
+[connection signal="pressed" from="CanvasLayer/Menu/Layers Selection/Layer 1" to="." method="_on__pressed"]
+[connection signal="pressed" from="CanvasLayer/Menu/Layers Selection/Layer 1" to="." method="_on_layer_1_pressed"]
+[connection signal="pressed" from="CanvasLayer/Menu/Layers Selection/Layer 2" to="." method="_on__pressed"]
+[connection signal="pressed" from="CanvasLayer/Menu/Layers Selection/Layer 2" to="." method="_on_layer_2_pressed"]
+[connection signal="pressed" from="CanvasLayer/Rotate Canvas/PanelContainer/HBoxContainer/Left" to="." method="rotate_left_button"]
+[connection signal="pressed" from="CanvasLayer/Rotate Canvas/PanelContainer/HBoxContainer/Right" to="." method="rotate_right_button"]

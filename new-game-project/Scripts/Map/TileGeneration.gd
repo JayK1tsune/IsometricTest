@@ -1,5 +1,6 @@
 extends TileMapLayer
-
+class_name Blocks
+var hud = Hud.new()
 @export var hold_threshold := 0.2  # Time in seconds to switch from single-click to hold
 @export var gridSize_x_ground = 10  # Ground layer width
 @export var gridSize_y_ground = 10  # Ground layer height
@@ -19,6 +20,7 @@ var is_mouse_in_UI: bool:
 	get = get_mouse_ui, set = set_mouse_ui
 
 func get_mouse_ui():
+	is_mouse_in_UI = hud.is_mouse_in_UI()
 	return is_mouse_in_UI
 	
 func set_mouse_ui(value: bool):
@@ -58,29 +60,33 @@ func _ready() -> void:
 	}
 
 	# Generate the ground layer
-	await GenerateLevel(ground, 0, gridSize_x_ground, gridSize_y_ground)
+	await GenerateLevel(ground, gridSize_x_ground, gridSize_y_ground)
 	print_debug("Ground complete")
 	
 	# Generate level 1
-	await GenerateLevel(level_1, 1, gridSize_x_level_1, gridSize_y_level_1)
+	await GenerateLevel(level_1,gridSize_x_level_1, gridSize_y_level_1)
 	print_debug("Level 1 complete")
 	
 	# Generate level 2
-	await GenerateLevel(level_2, 2, gridSize_x_level_2, gridSize_y_level_2)
+	await GenerateLevel(level_2,gridSize_x_level_2, gridSize_y_level_2)
 	print_debug("Level 2 complete")
 
 
 # Generate blocks for the specified level
-func GenerateLevel(level: TileMapLayer, layer_offset: int, gridSize_x: int, gridSize_y: int):
+func GenerateLevel(level: TileMapLayer, gridSize_x: int, gridSize_y: int):
 	var placed_blocks = {}
 	var first_block_placed = false
-
+	var layer = level.y_sort_origin 
+	
 	for y in range(gridSize_y):
-		for x in range(gridSize_x): 
-			var coords = Vector2i(x, y + layer_offset) 
+		for x in range(gridSize_x):
+			
+			var coords = Vector2i(x, y)
+			
 
 			# Ensure the new coordinates are within grid boundaries
 			if not placed_blocks.has(coords) and (first_block_placed == false or HasAdjacentBlock(coords, placed_blocks)):
+				level.y_sort_origin = layer
 				level.set_cell(coords, main_source, GrabRandomBlock())
 				placed_blocks[coords] = true
 				first_block_placed = true
@@ -88,13 +94,14 @@ func GenerateLevel(level: TileMapLayer, layer_offset: int, gridSize_x: int, grid
 				# Delay for visual feedback or for other purposes
 				const delay := 0.1
 				await get_tree().create_timer(delay).timeout
-				print_debug("Block placed at x:", coords.x, "y:", coords.y)
+				#print_debug("Block placed at x:", coords.x, "y:", coords.y)
 
 	print_debug("Total blocks placed on level:", level.name, "with count:", placed_blocks.size())
 
 # Get a random block from the available options
 func GrabRandomBlock() -> Vector2i:
 	var cubes = block_dic.values().pick_random()
+	#var cubes = Vector2i(1,0)
 	return cubes
 
 # Check if there is an adjacent block to a given coordinate
@@ -118,6 +125,7 @@ func _unhandled_input(event):
 
 	if event is InputEventMouseButton:
 		if get_mouse_ui()== true:
+			print_debug("Mouse was in UI unable to place block")
 			return
 		if event.is_action_pressed("left_click"):
 			# Start the timer for detecting hold
@@ -141,7 +149,8 @@ func _unhandled_input(event):
 func _process(delta):
 	var current_tilemap = layer_map[current_layer]
 	var clicked_cell = current_tilemap.local_to_map(get_local_mouse_position())
-
+	if get_mouse_ui()==true:
+		return
 	# Check if left-click hold threshold has been reached
 	if Input.is_action_pressed("left_click"):
 		left_click_timer += delta

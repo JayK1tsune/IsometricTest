@@ -1,8 +1,14 @@
 extends CanvasGroup
+class_name Hud
+@export var hud_cube: Blocks
 
-@onready var sprite_2d = $Control/CanvasLayer/Menu/BoxContainer/Sprite2D
+#On ready Functions, if you change the name you need to make sure you change the these.
+@export var current_cube: Sprite2D
+@export var button_text: Label
+# Vars exposed to the inspector 
 @export var textureAtlas: AtlasTexture
-@export var map_node : Node2D
+@export var camera: Camera2D
+
 const imageSlideNumber = 34
 var max_x: int
 var current_block_id 
@@ -10,7 +16,14 @@ var display_block_hud : bool = false
 var ghost_position: Vector2i = Vector2i(-1,-1)
 var ghost_tile: Vector2i = Vector2i(0,0)
 var ghost_sprite: Sprite2D
-@onready var label_text = $Control/CanvasLayer/Menu/BoxContainer/Select/Label
+var current_tilemap
+var current_offeset_value : Vector2
+
+
+var is_mous_in_ui = false
+
+func hud_block_id() :
+	return hud_cube.blockId
 
 var frames = {
 	0:int(4),
@@ -21,25 +34,26 @@ var frames = {
 }
 
 func _ready():
-	current_block_id = map_node.blockId
+	current_offeset_value = camera.offset
+	current_block_id = hud_block_id()
 	max_x = 140
 	textureAtlas.region = textureAtlas.get_region()
 	print(textureAtlas.region.position.x)
-	sprite_2d.texture = textureAtlas
+	current_cube.texture = textureAtlas
 	
 	#make the ghost sprite
 	ghost_sprite = Sprite2D.new()
+	ghost_sprite.name = "Ghost Sprite"
 	ghost_sprite.texture = textureAtlas
 	ghost_sprite.modulate = Color(1,1,1,0.3)
 	ghost_sprite.visible = false
 	add_child(ghost_sprite)
 	
 func _process(_delta) -> void:
-	var current_tilemap = map_node.layer_map[map_node.current_layer]
-	var mouse_pos = current_tilemap.local_to_map(get_local_mouse_position())
+	var mouse_pos = hud_cube.local_to_map(get_local_mouse_position())
 	if mouse_pos != ghost_position and display_block_hud:
 		ghost_position = mouse_pos
-		var world_pos = current_tilemap.map_to_local(ghost_position)
+		var world_pos = hud_cube.map_to_local(ghost_position)
 		ghost_sprite.position = world_pos
 		ghost_sprite.visible = true
 	if display_block_hud == false:
@@ -53,7 +67,7 @@ func _on_back_pressed():
 		for block_id in frames:
 			if frames[block_id] == textureAtlas.region.position.x:
 				current_block_id = block_id
-				map_node.blockId = current_block_id  # Update the map_node's blockId
+				hud_cube.blockId = current_block_id
 				print("Updated block ID:", current_block_id)
 				break  # Exit the loop once we find a match
 
@@ -67,7 +81,7 @@ func _on_next_pressed():
 		for block_id in frames:
 			if frames[block_id] == textureAtlas.region.position.x:
 				current_block_id = block_id
-				map_node.blockId = current_block_id  # Update the map_node's blockId
+				hud_cube.blockId = current_block_id  # Update the map_node's blockId
 				print("Updated block ID:", current_block_id)
 				break  # Exit the loop once we find a match
 
@@ -75,24 +89,45 @@ func _on_next_pressed():
 		print("Already at the last frame")
 
 func _on_b_pressed():
-	map_node.current_layer = map_node.Layer.GROUND
+	hud_cube.current_layer = hud_cube.Layer.GROUND
 func _on_layer_1_pressed():
-	map_node.current_layer = map_node.Layer.LEVEL_1
+	hud_cube.current_layer = hud_cube.Layer.LEVEL_1
 func _on_layer_2_pressed():
-	map_node.current_layer = map_node.Layer.LEVEL_2
+	hud_cube.current_layer = hud_cube.Layer.LEVEL_2
 
 
 func _on_select_pressed():
 	display_block_hud = not display_block_hud
 	if display_block_hud == true:
-		label_text.text = "HIDE"
+		button_text.text = "HIDE"
 	else:
-		label_text.text = "SHOW"
+		button_text.text = "SHOW"
 
 
 func _on_control_mouse_entered():
-	print("i'm in")
-
-
+	print_debug("I'm in and true")
+	is_mous_in_ui = true
+	
 func _on_control_mouse_exited():
-	print("i'm out")
+	print_debug("i'm out")
+	is_mous_in_ui = false
+
+func is_mouse_in_UI():
+	return is_mous_in_ui
+
+	pass # Replace with function body.
+
+
+func rotate_left_button():
+	#TODO camer lerp
+	camera.offset -= Vector2(current_offeset_value).lerp(Vector2(20,0),1)
+	current_offeset_value = camera.offset
+	print_debug(current_offeset_value)
+	
+	print_debug("Left button pressed")
+	pass # Replace with function body.
+
+
+func rotate_right_button():
+	camera.offset += Vector2(20,0)
+	pass # Replace with function body.

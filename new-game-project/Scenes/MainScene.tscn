@@ -1,22 +1,26 @@
-[gd_scene load_steps=3 format=3 uid="uid://bq0nscf3ori1p"]
+[gd_scene load_steps=4 format=3 uid="uid://bq0nscf3ori1p"]
 
 [ext_resource type="PackedScene" uid="uid://2r42qelcbx3p" path="res://UI/HUD.tscn" id="1_bly2w"]
+[ext_resource type="Script" uid="uid://cb3cuao4edqyw" path="res://Scenes/AStar_Test.gd" id="1_nhkr4"]
 [ext_resource type="PackedScene" uid="uid://b6487e3dt2ugf" path="res://Scenes/Tilemap.tscn" id="1_xg7u5"]
 
 [node name="MainScene" type="Node2D"]
 
-[node name="Control" parent="." node_paths=PackedStringArray("map_node") instance=ExtResource("1_bly2w")]
-z_index = 1
-texture_filter = 1
-map_node = NodePath("../Sprites")
+[node name="CanvasGroup" parent="." node_paths=PackedStringArray("hud_cube", "camera") instance=ExtResource("1_bly2w")]
+hud_cube = NodePath("../MapNodes")
+camera = NodePath("../Camera2D")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(1.52, 1.52)
 
-[node name="Sprites" parent="." groups=["ui"] instance=ExtResource("1_xg7u5")]
-gridSize_x_ground = 5
-gridSize_y_ground = 5
-gridSize_x_level_1 = 0
-gridSize_y_level_1 = 0
-gridSize_x_level_2 = 0
-gridSize_y_level_2 = 0
+[node name="MapNodes" parent="." groups=["ui"] instance=ExtResource("1_xg7u5")]
+gridSize_x_ground = 9
+gridSize_y_ground = 9
+gridSize_x_level_1 = 7
+gridSize_y_level_1 = 8
+gridSize_x_level_2 = 5
+gridSize_y_level_2 = 5
+
+[node name="A*" type="Node2D" parent="." node_paths=PackedStringArray("tile_cubes")]
+script = ExtResource("1_nhkr4")
+tile_cubes = NodePath("../MapNodes")

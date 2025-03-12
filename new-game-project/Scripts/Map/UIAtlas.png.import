@@ -3,14 +3,14 @@
 importer="texture_atlas"
 type="Texture2D"
 uid="uid://bx5fri4fv1jqp"
-path="res://.godot/imported/UIAtlas.png-1d68ef8a1e285fc0505f84341888c7e1.res"
+path="res://.godot/imported/UIAtlas.png-68b210abd68c6018636f10efe082db8f.res"
 group_file="res://UI/UIAtlas.png"
 valid=true
 [deps]
 
 
-source_file="res://Assets/UI/UIAtlas.png"
-dest_files=["res://.godot/imported/UIAtlas.png-1d68ef8a1e285fc0505f84341888c7e1.res"]
+source_file="res://Scripts/Map/UIAtlas.png"
+dest_files=["res://.godot/imported/UIAtlas.png-68b210abd68c6018636f10efe082db8f.res"]
 
 [params]
 
