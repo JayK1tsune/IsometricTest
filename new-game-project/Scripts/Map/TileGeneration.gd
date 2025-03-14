@@ -1,6 +1,8 @@
 extends TileMapLayer
 class_name Blocks
 var hud = Hud.new()
+var astar = AStarGrid2D.new()
+@export var aStarScript : Astar_Script
 @export var hold_threshold := 0.2  # Time in seconds to switch from single-click to hold
 @export var gridSize_x_ground = 10  # Ground layer width
 @export var gridSize_y_ground = 10  # Ground layer height
@@ -58,6 +60,14 @@ func _ready() -> void:
 		Layer.LEVEL_1: level_1,
 		Layer.LEVEL_2: level_2
 	}
+	
+	astar.size = Vector2i(32,32)
+	astar.cell_size = Vector2i(16,16)
+	astar.CELL_SHAPE_ISOMETRIC_DOWN
+	astar.DIAGONAL_MODE_ONLY_IF_NO_OBSTACLES
+	astar.update()
+	
+	
 
 	# Generate the ground layer
 	await GenerateLevel(ground, gridSize_x_ground, gridSize_y_ground)
@@ -70,39 +80,52 @@ func _ready() -> void:
 	# Generate level 2
 	await GenerateLevel(level_2,gridSize_x_level_2, gridSize_y_level_2)
 	print_debug("Level 2 complete")
+	
+	aStarScript.ShowPath()
 
 
-# Generate blocks for the specified level
 func GenerateLevel(level: TileMapLayer, gridSize_x: int, gridSize_y: int):
 	var placed_blocks = {}
 	var first_block_placed = false
 	var layer = level.y_sort_origin 
 	
 	for y in range(gridSize_y):
-		for x in range(gridSize_x):
-			
+		for x in range(gridSize_x):			
 			var coords = Vector2i(x, y)
-			
 
 			# Ensure the new coordinates are within grid boundaries
 			if not placed_blocks.has(coords) and (first_block_placed == false or HasAdjacentBlock(coords, placed_blocks)):
 				level.y_sort_origin = layer
-				level.set_cell(coords, main_source, GrabRandomBlock())
+
+				var selected_block = GrabRandomBlock()
+
+				level.set_cell(coords, main_source, selected_block)
+
+				if selected_block == Vector2i(2, 0) and first_block_placed == true:  
+					astar.set_point_solid(coords, true)
+					set_cell(coords,main_source,Vector2i(4,0),2)
+					print("Path set at", coords)
+
 				placed_blocks[coords] = true
 				first_block_placed = true
-				
+
 				# Delay for visual feedback or for other purposes
 				const delay := 0.1
 				await get_tree().create_timer(delay).timeout
-				#print_debug("Block placed at x:", coords.x, "y:", coords.y)
 
 	print_debug("Total blocks placed on level:", level.name, "with count:", placed_blocks.size())
+
 
 # Get a random block from the available options
 func GrabRandomBlock() -> Vector2i:
 	var cubes = block_dic.values().pick_random()
-	#var cubes = Vector2i(1,0)
 	return cubes
+	
+func SetTileColor(coords: Vector2i, layer: Layer, color: Color):
+	var tilemap = layer_map[layer]
+	var tile_data = tilemap.get_cell_tile_data(coords)
+	if tile_data:
+		tile_data.set_modulate(color)
 
 # Check if there is an adjacent block to a given coordinate
 func HasAdjacentBlock(coords: Vector2i, placed_blocks: Dictionary) -> bool:

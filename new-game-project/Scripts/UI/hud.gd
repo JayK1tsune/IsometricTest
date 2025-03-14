@@ -115,8 +115,6 @@ func _on_control_mouse_exited():
 func is_mouse_in_UI():
 	return is_mous_in_ui
 
-	pass # Replace with function body.
-
 
 func rotate_left_button():
 	#TODO camer lerp

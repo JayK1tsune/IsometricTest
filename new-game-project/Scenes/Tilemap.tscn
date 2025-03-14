@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://b6487e3dt2ugf"]
+[gd_scene load_steps=6 format=3 uid="uid://b6487e3dt2ugf"]
 
 [ext_resource type="Script" uid="uid://c3dn5khrpntwe" path="res://Scripts/Map/TileGeneration.gd" id="1_q60gg"]
 [ext_resource type="Texture2D" uid="uid://daixp0rg1o252" path="res://Assets/Blocks/cube2.png" id="2_57con"]
+[ext_resource type="Script" uid="uid://cb3cuao4edqyw" path="res://Scenes/AStar_Test.gd" id="3_inawv"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_o4sm1"]
 texture = ExtResource("2_57con")
@@ -13,10 +14,24 @@ texture_region_size = Vector2i(34, 33)
 1:0/0/texture_origin = Vector2i(0, -8)
 2:0/0 = 0
 2:0/0/texture_origin = Vector2i(0, -8)
+3:0/next_alternative_id = 3
 3:0/0 = 0
 3:0/0/texture_origin = Vector2i(0, -8)
+3:0/1 = 1
+3:0/1/texture_origin = Vector2i(0, -8)
+3:0/1/modulate = Color(0.321466, 0.511977, 0.859132, 1)
+3:0/2 = 2
+3:0/2/texture_origin = Vector2i(0, -8)
+3:0/2/y_sort_origin = -12
+4:0/next_alternative_id = 3
 4:0/0 = 0
 4:0/0/texture_origin = Vector2i(0, -8)
+4:0/1 = 1
+4:0/1/texture_origin = Vector2i(0, -8)
+4:0/1/modulate = Color(0, 0, 0, 1)
+4:0/2 = 2
+4:0/2/texture_origin = Vector2i(0, -8)
+4:0/2/modulate = Color(0, 0, 0, 1)
 
 [sub_resource type="TileSet" id="TileSet_rctcv"]
 tile_shape = 1
@@ -26,9 +41,10 @@ tile_size = Vector2i(32, 16)
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_o4sm1")
 
-[node name="Ground" type="TileMapLayer"]
+[node name="Ground" type="TileMapLayer" node_paths=PackedStringArray("aStarScript")]
 tile_set = SubResource("TileSet_rctcv")
 script = ExtResource("1_q60gg")
+aStarScript = NodePath("Astar")
 gridSize_x_ground = 3
 gridSize_y_ground = 3
 gridSize_x_level_1 = 5
@@ -46,3 +62,11 @@ y_sort_origin = 1
 y_sort_enabled = true
 tile_set = SubResource("TileSet_rctcv")
 y_sort_origin = 2
+
+[node name="Astar" type="Node2D" parent="." node_paths=PackedStringArray("t")]
+script = ExtResource("3_inawv")
+t = NodePath("..")
+path_end_poos = Vector2i(6, 6)
+pathColour = Color(0.19505, 0.388366, 0.805485, 1)
+
+[node name="PathLine" type="Line2D" parent="."]
