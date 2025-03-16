@@ -10,6 +10,7 @@ var astar = AStarGrid2D.new()
 @export var gridSize_y_level_1 = 10  # Level 1 height
 @export var gridSize_x_level_2 = 10  # Level 2 width
 @export var gridSize_y_level_2 = 10  # Level 2 height
+@export var Hazzards : int  # Level 2 height
 
 @onready var ground = $"."
 @onready var level_1 = $Level1
@@ -39,20 +40,26 @@ var current_layer = Layer.GROUND
 const TILE_WIDTH = 32  # Width of the tile (horizontal dimension)
 const TILE_HEIGHT = 16  # Height of the tile (vertical dimension)
 const main_source = 0
+const hazzard_source = 1
 
 var block_dic = {
 	0:Vector2i(0, 0),
 	1:Vector2i(1, 0),
 	2:Vector2i(2, 0),
 	3:Vector2i(3, 0),
-	4:Vector2i(4, 0)
+	4:Vector2i(4, 0),
 }
+var hazzard_dic = {
+	0:Vector2i(0,0)
+}
+
 var layer_map = {}
 var  blockId = 0
 
 func _get_block_id() -> Vector2i:
 	return block_dic.get(blockId,Vector2i(0,0))
-
+func _get_hazzard_block_id() -> Vector2i:
+	return hazzard_dic.get(blockId,Vector2i(1,0))
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	layer_map ={
@@ -64,7 +71,7 @@ func _ready() -> void:
 	astar.size = Vector2i(32,32)
 	astar.cell_size = Vector2i(16,16)
 	astar.CELL_SHAPE_ISOMETRIC_DOWN
-	astar.DIAGONAL_MODE_ONLY_IF_NO_OBSTACLES
+	astar.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
 	astar.update()
 	
 	
@@ -88,7 +95,7 @@ func GenerateLevel(level: TileMapLayer, gridSize_x: int, gridSize_y: int):
 	var placed_blocks = {}
 	var first_block_placed = false
 	var layer = level.y_sort_origin 
-	
+	var remaning_hazzards = Hazzards
 	for y in range(gridSize_y):
 		for x in range(gridSize_x):			
 			var coords = Vector2i(x, y)
@@ -96,15 +103,24 @@ func GenerateLevel(level: TileMapLayer, gridSize_x: int, gridSize_y: int):
 			# Ensure the new coordinates are within grid boundaries
 			if not placed_blocks.has(coords) and (first_block_placed == false or HasAdjacentBlock(coords, placed_blocks)):
 				level.y_sort_origin = layer
+				var selected_block_source
+				var selected_block
+				if remaning_hazzards > 0 and first_block_placed == true:
+					if randf() < 0.25:
+						selected_block_source = 1
+						selected_block = GrabRandomBlock(selected_block_source)
+						astar.set_point_solid(coords,true)
+						print("DANGER BLOCK",coords)
+						remaning_hazzards -= 1
+					else:
+						selected_block_source = 0
+						selected_block = GrabRandomBlock(selected_block_source)
+				else :
+					selected_block_source = 0
+					selected_block = GrabRandomBlock(selected_block_source)
 
-				var selected_block = GrabRandomBlock()
 
-				level.set_cell(coords, main_source, selected_block)
-
-				if selected_block == Vector2i(2, 0) and first_block_placed == true:  
-					astar.set_point_solid(coords, true)
-					set_cell(coords,main_source,Vector2i(4,0),2)
-					print("Path set at", coords)
+				level.set_cell(coords, selected_block_source, selected_block)
 
 				placed_blocks[coords] = true
 				first_block_placed = true
@@ -117,10 +133,16 @@ func GenerateLevel(level: TileMapLayer, gridSize_x: int, gridSize_y: int):
 
 
 # Get a random block from the available options
-func GrabRandomBlock() -> Vector2i:
-	var cubes = block_dic.values().pick_random()
-	return cubes
+func GrabRandomBlock(source: int) -> Vector2i:
+	if source == 0:
+		return block_dic.values().pick_random()
+	else:
+		return _get_hazzard_block_id()
+
 	
+
+	
+
 func SetTileColor(coords: Vector2i, layer: Layer, color: Color):
 	var tilemap = layer_map[layer]
 	var tile_data = tilemap.get_cell_tile_data(coords)
